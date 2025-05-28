@@ -82,7 +82,7 @@ func get(args *GetArgs) {
 	reply := GetReply{}
 
 	err = client.Call("KV.Get", args, &reply)
-	fmt.Printf("Get %s : %s \n", "name", reply.Value)
+	fmt.Printf("Get %s : %s \n", args.Key, reply.Value)
 }
 
 func put(args *PutArgs) {
