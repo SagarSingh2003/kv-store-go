@@ -27,18 +27,17 @@ type PutReply struct {
 }
 
 type KV struct {
-	mu    sync.Mutex
+	mu    sync.RWMutex
 	store map[string]string
 }
 
 func (store *KV) Get(args *GetArgs, replyArgs *GetReply) error {
 
-	store.mu.Lock()
+	store.mu.RLock()
+	defer store.mu.RUnlock()
 	value, ok := store.store[args.Key]
 
 	replyArgs.Value = value
-
-	store.mu.Unlock()
 
 	if !ok {
 		return errors.New("Some error occured in Getting from the key value store")
@@ -50,8 +49,9 @@ func (store *KV) Get(args *GetArgs, replyArgs *GetReply) error {
 func (store *KV) Put(args *PutArgs, replyArgs *PutReply) error {
 
 	store.mu.Lock()
+	defer store.mu.Unlock()
+
 	store.store[args.Key] = args.Value
-	store.mu.Unlock()
 
 	return nil
 }
